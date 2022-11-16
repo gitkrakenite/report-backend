@@ -1,0 +1,22 @@
+const express = require("express");
+const dotenv = require("dotenv").config();
+const colors = require("colors");
+const reportRoute = require("./routes/reportRoute");
+const cors = require("cors");
+const connectDB = require("./config/db");
+
+const PORT = process.env.PORT || 5000;
+
+const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cors());
+
+// connect to db
+connectDB();
+
+// routes
+app.use("/api/v1/report", reportRoute);
+
+app.listen(PORT, console.log(`Server running on port ${PORT}`));
