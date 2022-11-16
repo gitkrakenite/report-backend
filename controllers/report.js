@@ -1,11 +1,12 @@
 const Report = require("../models/reportModel");
+const User = require("../models/userModel");
 
 // DESC     get only my reports
 // METHOD   GET /api/v1/report
 // ACCESS   private
 const getMyReport = async (req, res) => {
   try {
-    const report = await Report.find();
+    const report = await Report.find({ user: req.user.id });
     res.status(200).json(report);
   } catch (error) {
     res.status(500).send(error);
@@ -27,6 +28,7 @@ const createReport = async (req, res) => {
       description: req.body.description,
       image: req.body.image,
       category: req.body.category,
+      user: req.user.id,
     });
     res.status(201).json(report);
   } catch (error) {
@@ -42,6 +44,20 @@ const deleteReport = async (req, res) => {
 
   if (!report) {
     res.status(400).json({ message: "report not found" });
+    return;
+  }
+
+  const user = await User.findById(req.user.id); //find the logged in user from db
+
+  // check for user
+  if (!user) {
+    res.status(401).send("user not found");
+    return;
+  }
+
+  // compare the user who created the goal with the logged in user
+  if (goal.user.toString() !== user.id) {
+    res.status(401).send("Not Authorized");
     return;
   }
 
