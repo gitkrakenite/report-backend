@@ -55,6 +55,8 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
+  // console.log(email, password);
+
   if (!email || !password) {
     res.status(400).send("A value is missing");
     return;

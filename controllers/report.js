@@ -1,5 +1,6 @@
 const Report = require("../models/reportModel");
 const User = require("../models/userModel");
+const Category = require("../models/categoryModel");
 
 // DESC     get only my reports
 // METHOD   GET /api/v1/report
@@ -17,7 +18,7 @@ const getMyReport = async (req, res) => {
 // METHOD   POST /api/v1/report
 // ACCESS   private
 const createReport = async (req, res) => {
-  if (!req.body.title || !req.body.description || !req.body.image) {
+  if (!req.body.title || !req.body.description || !req.body.category) {
     res.status(400).json({ message: "A value is missing" });
     return;
   }
@@ -27,6 +28,8 @@ const createReport = async (req, res) => {
       title: req.body.title,
       description: req.body.description,
       image: req.body.image,
+      email: req.body.email,
+      name: req.body.name,
       category: req.body.category,
       user: req.user.id,
     });
@@ -56,14 +59,14 @@ const deleteReport = async (req, res) => {
   }
 
   // compare the user who created the goal with the logged in user
-  if (goal.user.toString() !== user.id) {
+  if (report.user.toString() !== user.id) {
     res.status(401).send("Not Authorized");
     return;
   }
 
   try {
     await Report.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Deletion Succesful" });
+    res.status(200).json({ id: req.params.id });
   } catch (error) {
     res.status(400).json({ message: "Could not delete report" });
   }
@@ -75,17 +78,19 @@ const deleteReport = async (req, res) => {
 const getAllReport = async (req, res) => {
   try {
     const report = await Report.find();
-    res.status(200).json(report);
+
+    res.json(report);
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).json({ message: error.message });
   }
 };
 
-// DESC     get all reports
-// METHOD   GET /api/v1/report/admin/39104245
+// DESC     update all reports
+// METHOD   PUT /api/v1/report/admin/39104245/id
 // ACCESS   public
 const updateReport = async (req, res) => {
   const report = await Report.findById(req.params.id);
+  // console.log(req.body);
 
   if (!report) {
     res.status(400).json({ message: "Goal not found" });
@@ -104,10 +109,40 @@ const updateReport = async (req, res) => {
   }
 };
 
+// Create category
+const createCatgory = async (req, res) => {
+  if (!req.body.category) {
+    res.status(400).json({ message: "Category missing" });
+    return;
+  }
+  try {
+    const report = await Category.create({
+      category: req.body.category,
+    });
+    res.status(201).json(report);
+  } catch (error) {
+    res.status(500).json({ message: error });
+    console.log(error);
+  }
+};
+
+// Create category
+const fetchCatgory = async (req, res) => {
+  try {
+    const report = await Category.find();
+    res.status(200).json(report);
+  } catch (error) {
+    res.status(500).json({ message: error });
+    console.log(error);
+  }
+};
+
 module.exports = {
   getMyReport,
   createReport,
   deleteReport,
   getAllReport,
   updateReport,
+  createCatgory,
+  fetchCatgory,
 };

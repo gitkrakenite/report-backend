@@ -10,8 +10,8 @@ const PORT = process.env.PORT || 5000;
 
 const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: "30mb", extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // connect to db
