@@ -126,10 +126,27 @@ const createCatgory = async (req, res) => {
   }
 };
 
-// Create category
+// fetch category
 const fetchCatgory = async (req, res) => {
   try {
     const report = await Category.find();
+    res.status(200).json(report);
+    // console.log("worked");
+  } catch (error) {
+    res.status(500).json({ message: error });
+    console.log(error);
+  }
+};
+
+// delete category
+const deleteCategory = async (req, res) => {
+  if (!req.params.id) {
+    res.status(404).json({ message: "No Id sent" });
+    return;
+  }
+
+  try {
+    const report = await Category.findByIdAndDelete(req.params.id);
     res.status(200).json(report);
   } catch (error) {
     res.status(500).json({ message: error });
@@ -145,4 +162,5 @@ module.exports = {
   updateReport,
   createCatgory,
   fetchCatgory,
+  deleteCategory,
 };
