@@ -9,6 +9,8 @@ const User = require("../models/userModel");
 const registerUser = async (req, res) => {
   const { name, email, profile, password } = req.body;
 
+  console.log(name, email, profile, password);
+
   if (!name || !email || !profile || !password) {
     res.status(400).send("A value is missing");
     return;
